@@ -1,6 +1,4 @@
 from mitmproxy.options import Options
-from mitmproxy.proxy.config import ProxyConfig
-from mitmproxy.proxy.server import ProxyServer
 from mitmproxy.tools.web.master import WebMaster
 from mitmproxy.http import HTTPFlow
 
@@ -45,6 +43,5 @@ if __name__ == "__main__":
     ssl_insecure=True
     )
     master = WebMaster(ops)
-    master.server = ProxyServer(ProxyConfig(ops))
     master.addons.add(ArkInterceptor())
     master.run()
