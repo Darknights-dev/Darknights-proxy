@@ -1,11 +1,8 @@
 from mitmproxy.options import Options
+from mitmproxy.proxy.config import ProxyConfig
+from mitmproxy.proxy.server import ProxyServer
 from mitmproxy.tools.web.master import WebMaster
 from mitmproxy.http import HTTPFlow
-import mitmproxy.http
-
-from mitmproxy import ctx, http
-import json, time
-
 
 remote_server = "example.com"
 proxy_enable = True
@@ -37,8 +34,8 @@ class ArkInterceptor():
     def http_connect(self, flow: HTTPFlow):
         if (flow.request.host in self.Servers.keys()):
             flow.request.host, flow.request.port = self.Servers.get(flow.request.host)
-            
-    def remote_config_edit(self, flow: HTTPFlow):
+
+    def response(self, flow: HTTPFlow):
         if flow.request.host == "ak-conf.hypergryph.com" and flow.request.path == "/config/prod/official/remote_config":
             flow.response.set_text('{"enableGameBI": true, "enableSDKNetSecure" : false, "enableBestHttp": false}')
 
@@ -55,5 +52,6 @@ if __name__ == "__main__":
         ssl_insecure=True
     )
     master = WebMaster(ops)
+    master.server = ProxyServer(ProxyConfig(ops))
     master.addons.add(ArkInterceptor())
     master.run()
